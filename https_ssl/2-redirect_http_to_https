@@ -32,14 +32,14 @@ defaults
         errorfile 502 /etc/haproxy/errors/502.http
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
-
-frontend  seyi_frontend
+frontend http
         bind *:80
+        bind *:443 ssl crt /etc/letsencrypt/live/www.seyiranky.tech/seyi_combined.pem
+	mode http
+        default_backend www-backend
+	redirect scheme https code 301 if !{ ssl_fc }
 
-        bind *:443 ssl crt /etc/letsencrypt/live/www.seyiranky.tech/www.seyiranky.tech.pem
-        mode http-request set-header X-forwarded-proto https
-        default_backend seyi_backend
-backend seyi_backend
+backend www-backend
         balance roundrobin
         server 6343-web-01 52.23.202.242:80 check
         server 6343-web-02 3.84.186.46:80 check
